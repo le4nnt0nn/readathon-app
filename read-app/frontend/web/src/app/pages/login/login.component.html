@@ -1,0 +1,25 @@
+<div class="max-w-md mx-auto mt-10">
+  <div class="p-6 rounded-3xl bg-white/5 border border-white/10 shadow-xl">
+    <h1 class="text-2xl font-semibold">Bienvenido 🫧</h1>
+    <p class="text-white/70 mt-1">Entra a tu biblioteca submarina.</p>
+
+    <form class="mt-6 grid gap-3" (ngSubmit)="submit()">
+      <input class="px-4 py-3 rounded-2xl bg-white/10 border border-white/10 outline-none"
+             placeholder="Email o usuario" [(ngModel)]="identifier" name="identifier" required>
+
+      <input class="px-4 py-3 rounded-2xl bg-white/10 border border-white/10 outline-none"
+             placeholder="Contraseña" type="password" [(ngModel)]="password" name="password" required>
+
+      <button class="mt-2 px-4 py-3 rounded-2xl bg-white/15 hover:bg-white/20 border border-white/10">
+        Entrar
+      </button>
+
+      <p class="text-sm text-white/70">
+        ¿No tienes cuenta?
+        <a routerLink="/register" class="text-[color:var(--foam)] hover:underline">Regístrate</a>
+      </p>
+
+      <p *ngIf="error" class="text-sm text-red-200">{{ error }}</p>
+    </form>
+  </div>
+</div>

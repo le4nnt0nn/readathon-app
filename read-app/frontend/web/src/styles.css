@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root{
+  --ocean-0:#031026;
+  --ocean-1:#052a4f;
+  --ocean-2:#0b5fa5;
+  --foam:#aeeaff;
+}
+
+html, body { height: 100%; }
+body{
+  margin: 0;
+  background:
+    radial-gradient(1200px 600px at 20% 0%, rgba(174,234,255,.18), transparent 60%),
+    radial-gradient(900px 500px at 80% 20%, rgba(11,95,165,.22), transparent 55%),
+    linear-gradient(180deg, var(--ocean-0), var(--ocean-1) 40%, #021018);
+  color: white;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+}
