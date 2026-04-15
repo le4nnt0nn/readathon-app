@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 export type Stats = { want: number; read: number };
 
@@ -13,7 +14,10 @@ export type ExternalBook = {
   userStatus?: 'WANT' | 'READ' | null;
 };
 
-export type ExternalSearchResponse = { items: ExternalBook[]; total: number };
+export type ExternalSearchResponse = {
+  items: ExternalBook[];
+  total: number;
+};
 
 export type AddBookPayload = {
   source: 'GOOGLE';
@@ -25,26 +29,55 @@ export type AddBookPayload = {
   status: 'WANT' | 'READ';
 };
 
-
 @Injectable({ providedIn: 'root' })
 export class ApiService {
+  private readonly baseUrl = '/api';
+
   constructor(private http: HttpClient) {}
 
-  stats() {
-    return this.http.get<Stats>('/api/me/stats');
+  stats(): Observable<Stats> {
+    return this.http.get<Stats>(`${this.baseUrl}/me/stats`);
   }
 
-  searchExternal(q: string, page: number) {
-    return this.http.get<ExternalSearchResponse>(`/api/external/books?q=${encodeURIComponent(q)}&page=${page}`);
+  searchExternal(q: string, page: number = 0): Observable<ExternalSearchResponse> {
+    const params = new HttpParams()
+      .set('q', q)
+      .set('page', page.toString());
+
+    return this.http.get<ExternalSearchResponse>(
+      `${this.baseUrl}/external/books`,
+      { params }
+    );
   }
 
-    addToMyBooks(payload: AddBookPayload) {
-        return this.http.post<{ item: any }>('/api/me/books', payload);
+  addToMyBooks(payload: AddBookPayload): Observable<{ item: any }> {
+    return this.http.post<{ item: any }>(`${this.baseUrl}/me/books`, payload);
   }
 
-  myBooks(status?: 'WANT' | 'READ') {
-    const qs = status ? `?status=${status}` : '';
-    return this.http.get<{ items: any[] }>(`/api/me/books${qs}`);
+  myBooks(status?: 'WANT' | 'READ'): Observable<{ items: any[] }> {
+    let params = new HttpParams();
+
+    if (status) {
+      params = params.set('status', status);
+    }
+
+    return this.http.get<{ items: any[] }>(
+      `${this.baseUrl}/me/books`,
+      { params }
+    );
   }
 
+  login(email: string, password: string) {
+    return this.http.post<{ token: string }>(`${this.baseUrl}/auth/login`, {
+      email,
+      password,
+    });
+  }
+
+  register(email: string, password: string) {
+    return this.http.post(`${this.baseUrl}/auth/register`, {
+      email,
+      password,
+    });
+  }
 }
