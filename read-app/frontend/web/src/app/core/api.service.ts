@@ -80,4 +80,11 @@ export class ApiService {
       password,
     });
   }
+
+  changePassword(currentPassword: string, newPassword: string) {
+    return this.http.post<{ ok: boolean }>(`${this.baseUrl}/me/change-password`, {
+      currentPassword,
+      newPassword
+    });
+  }
 }
