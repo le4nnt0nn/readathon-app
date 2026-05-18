@@ -2,7 +2,12 @@ import { Schema, model, Types } from "mongoose";
 
 const UserBookSchema = new Schema(
   {
-    userId: { type: Schema.Types.ObjectId, ref: "User", required: true, index: true },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
+    },
 
     source: { type: String, enum: ["GOOGLE"], default: "GOOGLE", index: true },
     externalId: { type: String, required: true, index: true },
@@ -12,14 +17,24 @@ const UserBookSchema = new Schema(
     thumbnail: { type: String },
     categories: { type: [String], default: [] },
 
-    status: { type: String, enum: ["WANT", "READ"], required: true, index: true },
+    status: {
+      type: String,
+      enum: ["WANT", "READ"],
+      required: true,
+      index: true,
+    },
 
-    rating: { type: Number, min: 1, max: 5 },
+    rating: {
+      type: Number,
+      min: 1,
+      max: 5,
+      required: false,
+    },
     review: { type: String, maxlength: 2000 },
 
     finishedAt: { type: Date }
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 UserBookSchema.index({ userId: 1, source: 1, externalId: 1 }, { unique: true });

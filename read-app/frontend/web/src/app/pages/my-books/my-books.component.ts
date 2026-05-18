@@ -24,6 +24,17 @@ export class MyBooksComponent implements OnInit {
     this.load();
   }
 
+  rate(book: any, rating: number) {
+    this.api.rateBook(book._id, rating).subscribe({
+      next: (res) => {
+        book.rating = res.item.rating;
+      },
+      error: () => {
+        console.error("Error puntuando libro");
+      }
+    });
+  }
+
   load() {
     this.loading = true;
     this.api.myBooks(this.tab).subscribe({
