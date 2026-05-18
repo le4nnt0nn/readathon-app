@@ -67,6 +67,13 @@ export class ApiService {
     );
   }
 
+  rateBook(id: string, rating: number) {
+    return this.http.patch<{ item: any }>(
+      `/api/me/books/${id}/rating`,
+      { rating }
+    );
+  }
+
   login(email: string, password: string) {
     return this.http.post<{ token: string }>(`${this.baseUrl}/auth/login`, {
       email,

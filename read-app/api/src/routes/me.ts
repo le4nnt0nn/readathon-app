@@ -107,6 +107,26 @@ meRouter.delete("/books/:id", async (req, res) => {
   return res.json({ ok: true });
 });
 
+meRouter.patch("/books/:id/rating", auth, async (req, res) => {
+  const userId = (req as any).user.userId;
+  const { id } = req.params;
+  const { rating } = req.body;
+
+  if (!rating || rating < 1 || rating > 5) {
+    return res.status(400).json({ message: "Rating inválido" });
+  }
+
+  const book = await UserBook.findOneAndUpdate(
+    { _id: id, userId },
+    { rating },
+    { new: true }
+  );
+
+  if (!book) return res.status(404).json({ message: "Libro no encontrado" });
+
+  res.json({ item: book });
+});
+
 meRouter.get("/stats", async (req, res) => {
   const userId = (req as any).user.userId as string;
   const [want, read] = await Promise.all([
