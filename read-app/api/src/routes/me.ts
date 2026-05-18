@@ -2,6 +2,8 @@ import { Router } from "express";
 import { z } from "zod";
 import { UserBook } from "../../models/UserBook";
 import { User } from "../../models/User";
+import bcrypt from 'bcrypt';
+import { auth } from "../middleware/auth";
 
 export const meRouter = Router();
 
@@ -113,3 +115,34 @@ meRouter.get("/stats", async (req, res) => {
   ]);
   return res.json({ want, read });
 });
+
+meRouter.post("/change-password", auth, async (req, res) => {
+  try {
+    const userId = (req as any).user.userId;
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Datos incompletos' });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({ message: 'La nueva contraseña debe tener al menos 8 caracteres' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
+
+    const isValid = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!isValid) {
+      return res.status(401).json({ message: 'Contraseña actual incorrecta' });
+    }
+
+    const newHash = await bcrypt.hash(newPassword, 10);
+    user.passwordHash = newHash;
+    await user.save();
+
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ message: 'Error interno' });
+  }
+})

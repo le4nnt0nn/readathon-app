@@ -48,7 +48,7 @@
         <div class="min-w-0">
           <div class="font-semibold leading-5 truncate">{{ b.title }}</div>
           <div class="text-sm text-white/70 mt-1 truncate">
-            {{ (b.authors?.length ? b.authors.join(', ') : 'Autor desconocido') }}
+            {{ (b.authors.length ? b.authors.join(', ') : 'Autor desconocido') }}
           </div>
           <div class="text-xs text-white/60 mt-2 truncate" *ngIf="b.categories?.length">
             {{ b.categories[0] }}
