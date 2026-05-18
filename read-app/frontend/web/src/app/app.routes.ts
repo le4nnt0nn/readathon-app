@@ -27,7 +27,11 @@ export const routes: Routes = [
       { path: 'my-books', component: MyBooksComponent },
       { path: 'users/:userId', component: UserProfileComponent },
       { path: 'books/:source/:externalId', component: BookDetailComponent },
-      { path: 'change-password', loadComponent: () => import('./pages/change-password/change-password.component').then(m => m.ChangePasswordComponent)}
+      { path: 'change-password', loadComponent: () =>
+          import('./pages/change-password/change-password.component').then(
+            (m) => m.ChangePasswordComponent,
+          ),
+      },
     ],
   },
 
