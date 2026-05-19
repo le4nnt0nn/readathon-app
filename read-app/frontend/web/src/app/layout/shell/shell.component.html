@@ -27,7 +27,7 @@
             Seguridad
           </button>
 
-          <div *ngIf="securityOpen"
+          <div *ngIf="securityOpen" @dropdownAnimation
             class="absolute right-0 mt-2 w-48 rounded-2xl bg-slate-800 border border-white/10 shadow-xl overflow-hidden z-50">
             <a routerLink="/app/change-password" class="block px-4 py-3 hover:bg-white/10 text-sm"
               (click)="securityOpen=false">
