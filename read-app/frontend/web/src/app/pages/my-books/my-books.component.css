@@ -1,0 +1,19 @@
+@keyframes starPop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.4);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-star {
+  animation: starPop 0.35s ease-out;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+}
