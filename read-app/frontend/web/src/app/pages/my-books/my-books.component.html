@@ -31,7 +31,7 @@
             desconocido') }}</div>
           <div class="text-xs text-white/60 mt-2 truncate" *ngIf="b.categories?.length">{{ b.categories[0] }}</div>
           <div *ngIf="b.status === 'READ'" class="flex gap-1 mt-2">
-            <span *ngFor="let star of [1,2,3,4,5]" (click)="rate(b, star)" class="cursor-pointer text-lg"
+            <span *ngFor="let star of [1,2,3,4,5]" (click)="rate(b, star)" class="cursor-pointer text-2xl transition-all duration-200 ease-out"
               [class.text-yellow-400]="b.rating >= star" [class.text-white]="b.rating < star"
               [class.opacity-40]="b.rating < star">
               ★
