@@ -166,3 +166,25 @@ meRouter.post("/change-password", auth, async (req, res) => {
     res.status(500).json({ message: 'Error interno' });
   }
 })
+
+meRouter.get("/insights", auth, async (req, res) => {
+  const userId = (req as any).user.userId;
+
+  const books = await UserBook.find({ userId, status: "READ" }).lean();
+  const genreCount: Record<string, number> = {};
+
+  books.forEach(book => {
+    if (book.categories?.length) {
+      const genre = book.categories[0];
+      genreCount[genre] = (genreCount[genre] || 0) + 1;
+    }
+  });
+
+  const genres = Object.entries(genreCount).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count);
+  const topRated = books.filter(b => typeof b.rating === "number").sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)).slice(0, 3);
+
+  res.json({
+    genres,
+    topRated
+  });
+});

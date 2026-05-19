@@ -94,4 +94,11 @@ export class ApiService {
       newPassword
     });
   }
+
+  getInsights() {
+    return this.http.get<{
+      genres: { name: string; count: number }[];
+      topRated: any[];
+    }>("/api/me/insights");
+  }
 }
