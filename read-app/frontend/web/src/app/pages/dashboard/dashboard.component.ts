@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NgIf, NgFor } from '@angular/common';
 import { ApiService } from '../../core/api.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -15,7 +16,7 @@ export class DashboardComponent implements OnInit {
   genres: { name: string; count: number }[] = [];
   topRated: any[] = [];
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, private router: Router) {}
 
   ngOnInit(): void {
     this.api.stats().subscribe({
@@ -36,5 +37,11 @@ export class DashboardComponent implements OnInit {
         this.loading = false;
       },
     });
+  }
+
+    goToList(tab: 'READ' | 'WANT') {
+      this.router.navigate(['/app/my-books'], {
+        queryParams: { tab }
+      });
   }
 }

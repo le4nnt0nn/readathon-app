@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgFor, NgIf, NgClass } from '@angular/common';
 import { ApiService } from '../../core/api.service';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-my-books',
@@ -15,12 +16,16 @@ export class MyBooksComponent implements OnInit {
   items: any[] = [];
   searchTerm = '';
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, private route: ActivatedRoute) {}
 
   ngOnInit() {
+  this.route.queryParams.subscribe(params => {
+    if (params['tab'] === 'READ' || params['tab'] === 'WANT') {
+      this.tab = params['tab'];
+    }
     this.load();
-  }
-
+  });
+}
     get filteredItems() {
     if (!this.searchTerm) return this.items;
 

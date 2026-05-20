@@ -3,12 +3,15 @@
     <h2 class="text-xl font-semibold">Tu océano lector 🌊</h2>
     <p class="text-white/70 mt-1">Resumen rápido de tus lecturas.</p>
     <div *ngIf="!loading; else skel" class="mt-6 grid grid-cols-2 gap-4">
-      <div class="p-5 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-white/10 text-center">
+      <div class="p-5 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 
+         border border-white/10 text-center cursor-pointer 
+         transition-all duration-200 hover:scale-[1.03] hover:shadow-lg" (click)="goToList('READ')">
         <div class="text-4xl font-bold text-cyan-300">{{ read }}</div>
         <div class="text-sm text-white/70 mt-1">Libros leídos 📘</div>
       </div>
-      <div
-        class="p-5 rounded-2xl bg-gradient-to-br from-purple-500/20 to-indigo-600/20 border border-white/10 text-center">
+      <div class="p-5 rounded-2xl bg-gradient-to-br from-purple-500/20 to-indigo-600/20 
+         border border-white/10 text-center cursor-pointer 
+         transition-all duration-200 hover:scale-[1.03] hover:shadow-lg" (click)="goToList('WANT')">
         <div class="text-4xl font-bold text-purple-300">{{ want }}</div>
         <div class="text-sm text-white/70 mt-1">Quiero leer 📚</div>
       </div>
@@ -79,5 +82,5 @@
         </div>
       </div>
     </div>
-</div>
+  </div>
 </div>
