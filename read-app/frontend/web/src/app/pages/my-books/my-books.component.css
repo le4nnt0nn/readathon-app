@@ -17,3 +17,7 @@
   animation: starPop 0.35s ease-out;
   text-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
 }
+
+.book-card {
+  transition: all 0.25s ease;
+}
