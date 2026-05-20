@@ -1,22 +1,36 @@
 import { Component, OnInit } from '@angular/core';
 import { NgFor, NgIf, NgClass } from '@angular/common';
 import { ApiService } from '../../core/api.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-my-books',
   standalone: true,
-  imports: [NgIf, NgFor, NgClass],
+  imports: [NgIf, NgFor, NgClass, FormsModule],
   templateUrl: '../my-books/my-books.component.html',
 })
 export class MyBooksComponent implements OnInit {
   tab: 'WANT' | 'READ' = 'WANT';
   loading = true;
   items: any[] = [];
+  searchTerm = '';
 
   constructor(private api: ApiService) {}
 
   ngOnInit() {
     this.load();
+  }
+
+    get filteredItems() {
+    if (!this.searchTerm) return this.items;
+
+    const term = this.searchTerm.toLowerCase();
+
+    return this.items.filter(b =>
+      b.title.toLowerCase().includes(term) ||
+      (b.authors?.join(' ').toLowerCase().includes(term)) ||
+      (b.categories?.join(' ').toLowerCase().includes(term))
+    );
   }
 
   setTab(t: 'WANT' | 'READ') {
