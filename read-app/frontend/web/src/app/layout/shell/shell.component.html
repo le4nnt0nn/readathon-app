@@ -2,13 +2,21 @@
   <header class="sticky top-0 z-20 backdrop-blur bg-white/5 border-b border-white/10">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
 
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-2xl bg-white/10 grid place-items-center">🌊</div>
-        <div>
-          <div class="font-semibold">Readathon | El océano de los libros</div>
-          <div class="text-xs text-white/70">Tu biblioteca submarina</div>
+      <a routerLink="/app/dashboard" class="flex items-center gap-3 cursor-pointer group">
+        <div class="w-10 h-10 rounded-xl bg-white/10 grid place-items-center
+           transition-all duration-200
+           group-hover:scale-110 active:scale-95 group-hover:bg-white/20">
+          🌊
         </div>
-      </div>
+        <div>
+          <div class="font-semibold group-hover:text-cyan-300 transition">
+            Readathon | El océano de los libros
+          </div>
+          <div class="text-xs text-white/60">
+            Tu biblioteca submarina
+          </div>
+        </div>
+      </a>
 
       <nav class="flex gap-2 text-sm items-center">
         <a routerLink="/app/dashboard" routerLinkActive="bg-white/10"
