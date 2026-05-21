@@ -16,25 +16,29 @@ export class MyBooksComponent implements OnInit {
   items: any[] = [];
   searchTerm = '';
 
-  constructor(private api: ApiService, private route: ActivatedRoute) {}
+  constructor(
+    private api: ApiService,
+    private route: ActivatedRoute,
+  ) {}
 
   ngOnInit() {
-  this.route.queryParams.subscribe(params => {
-    if (params['tab'] === 'READ' || params['tab'] === 'WANT') {
-      this.tab = params['tab'];
-    }
-    this.load();
-  });
-}
-    get filteredItems() {
+    this.route.queryParams.subscribe((params) => {
+      if (params['tab'] === 'READ' || params['tab'] === 'WANT') {
+        this.tab = params['tab'];
+      }
+      this.load();
+    });
+  }
+  get filteredItems() {
     if (!this.searchTerm) return this.items;
 
     const term = this.searchTerm.toLowerCase();
 
-    return this.items.filter(b =>
-      b.title.toLowerCase().includes(term) ||
-      (b.authors?.join(' ').toLowerCase().includes(term)) ||
-      (b.categories?.join(' ').toLowerCase().includes(term))
+    return this.items.filter(
+      (b) =>
+        b.title.toLowerCase().includes(term) ||
+        b.authors?.join(' ').toLowerCase().includes(term) ||
+        b.categories?.join(' ').toLowerCase().includes(term),
     );
   }
 
@@ -49,8 +53,17 @@ export class MyBooksComponent implements OnInit {
         book.rating = res.item.rating;
       },
       error: () => {
-        console.error("Error puntuando libro");
-      }
+        console.error('Error puntuando libro');
+      },
+    });
+  }
+
+  remove(book: any) {
+    this.api.removeBook(book._id).subscribe({
+      next: () => {
+        this.items = this.items.filter((b) => b._id !== book._id);
+      },
+      error: () => console.error('Error eliminando libro'),
     });
   }
 
