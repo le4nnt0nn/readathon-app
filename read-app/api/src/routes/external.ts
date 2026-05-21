@@ -36,7 +36,6 @@ externalRouter.get("/books", async (req, res) => {
       null
   }));
 
-  // Si viene usuario autenticado, añadimos estado (WANT/READ)
   const userId = (req as any).user?.userId;
   let enriched = items;
 
