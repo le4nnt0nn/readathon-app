@@ -39,14 +39,15 @@ export class ApiService {
     return this.http.get<Stats>(`${this.baseUrl}/me/stats`);
   }
 
-  searchExternal(q: string, page: number = 0): Observable<ExternalSearchResponse> {
-    const params = new HttpParams()
-      .set('q', q)
-      .set('page', page.toString());
+  searchExternal(
+    q: string,
+    page: number = 0,
+  ): Observable<ExternalSearchResponse> {
+    const params = new HttpParams().set('q', q).set('page', page.toString());
 
     return this.http.get<ExternalSearchResponse>(
       `${this.baseUrl}/external/books`,
-      { params }
+      { params },
     );
   }
 
@@ -61,17 +62,19 @@ export class ApiService {
       params = params.set('status', status);
     }
 
-    return this.http.get<{ items: any[] }>(
-      `${this.baseUrl}/me/books`,
-      { params }
-    );
+    return this.http.get<{ items: any[] }>(`${this.baseUrl}/me/books`, {
+      params,
+    });
   }
 
   rateBook(id: string, rating: number) {
-    return this.http.patch<{ item: any }>(
-      `/api/me/books/${id}/rating`,
-      { rating }
-    );
+    return this.http.patch<{ item: any }>(`/api/me/books/${id}/rating`, {
+      rating,
+    });
+  }
+
+  removeBook(id: string) {
+    return this.http.delete<{ ok: boolean }>(`${this.baseUrl}/me/books/${id}`);
   }
 
   login(email: string, password: string) {
@@ -89,16 +92,19 @@ export class ApiService {
   }
 
   changePassword(currentPassword: string, newPassword: string) {
-    return this.http.post<{ ok: boolean }>(`${this.baseUrl}/me/change-password`, {
-      currentPassword,
-      newPassword
-    });
+    return this.http.post<{ ok: boolean }>(
+      `${this.baseUrl}/me/change-password`,
+      {
+        currentPassword,
+        newPassword,
+      },
+    );
   }
 
   getInsights() {
     return this.http.get<{
       genres: { name: string; count: number }[];
       topRated: any[];
-    }>("/api/me/insights");
+    }>('/api/me/insights');
   }
 }

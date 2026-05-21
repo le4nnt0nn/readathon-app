@@ -1,1 +1,54 @@
-<p>user-profile works!</p>
+<div class="max-w-5xl mx-auto mt-8 space-y-8">
+    <section class="p-8 rounded-3xl bg-white/5 border border-white/10 shadow-xl">
+        <div class="flex items-center gap-6">
+
+            <div
+                class="w-20 h-20 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-3xl font-bold">
+                {{ user?.username[0] | uppercase }}
+            </div>
+
+            <div>
+                <h2 class="text-2xl font-semibold">{{ user?.username }}</h2>
+                <p class="text-white/60">{{ user?.email }}</p>
+            </div>
+
+        </div>
+    </section>
+    <section *ngIf="!loading" class="grid md:grid-cols-2 gap-6">
+
+        <div class="p-6 rounded-2xl bg-white/5 border border-white/10 text-center">
+            <div class="text-3xl font-bold text-cyan-300">
+                {{ stats?.read }}
+            </div>
+            <div class="text-white/60 text-sm mt-1">Libros leídos</div>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-white/5 border border-white/10 text-center">
+            <div class="text-3xl font-bold text-purple-300">
+                {{ stats?.want }}
+            </div>
+            <div class="text-white/60 text-sm mt-1">Quiero leer</div>
+        </div>
+    </section>
+
+    <section>
+        <h3 class="text-lg font-semibold mb-6 flex items-center gap-2">
+            📖 Últimas lecturas
+        </h3>
+        <div class="grid md:grid-cols-3 gap-6">
+
+            <div *ngFor="let b of recent" class="group p-4 rounded-2xl bg-white/5 border border-white/10 
+                hover:bg-white/10 transition-all duration-300">
+                <div class="w-32 aspect-[2/3] mx-auto overflow-hidden rounded-xl shadow-lg">
+
+                    <img *ngIf="b.thumbnail" [src]="b.thumbnail" class="w-full h-full object-cover 
+                    transition-transform duration-500 
+                    group-hover:scale-105" />
+                </div>
+                <div class="text-sm font-semibold text-center mt-3 line-clamp-2">
+                    {{ b.title }}
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
