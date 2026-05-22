@@ -14,7 +14,7 @@ export class FriendsComponent implements OnInit {
   outgoing: UserSearchItem[] = [];
   loading = true;
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService) { }
 
   ngOnInit() {
     this.load();
