@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 import { NgIf } from '@angular/common';
 import { trigger, state, style, transition, animate } from '@angular/animations';
@@ -7,7 +7,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 @Component({
   selector: 'app-shell',
   standalone: true,
-  imports: [RouterLink, RouterOutlet, NgIf],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet, NgIf],
   templateUrl: './shell.component.html',
   animations: [
     trigger('dropdownAnimation', [
@@ -36,10 +36,17 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 })
 export class ShellComponent {
   securityOpen = false;
+  usersOpen = false;
   constructor(public auth: AuthService, private router: Router) {}
+
+  toggleUsers() {
+    this.usersOpen = !this.usersOpen;
+    this.securityOpen = false;
+  }
   
   toggleSecurity() {
     this.securityOpen = !this.securityOpen;
+    this.usersOpen = false;
   }
 
   logout() {

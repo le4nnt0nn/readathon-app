@@ -9,6 +9,8 @@ import { DiscoverComponent } from './pages/discover/discover.component';
 import { MyBooksComponent } from './pages/my-books/my-books.component';
 import { UserProfileComponent } from './pages/user-profile/user-profile.component';
 import { BookDetailComponent } from './pages/book-detail/book-detail.component';
+import { UsersSearchComponent } from './pages/users-search/users-search.component';
+import { FriendsComponent } from './pages/friends/friends.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'login' },
@@ -25,7 +27,9 @@ export const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'discover', component: DiscoverComponent },
       { path: 'my-books', component: MyBooksComponent },
+      { path: 'users', component: UsersSearchComponent },
       { path: 'users/:userId', component: UserProfileComponent },
+      { path: 'friends', component: FriendsComponent },
       { path: 'books/:source/:externalId', component: BookDetailComponent },
       {
         path: 'change-password',

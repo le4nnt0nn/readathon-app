@@ -29,6 +29,15 @@ export type AddBookPayload = {
   status: 'WANT' | 'READ';
 };
 
+export type UserSearchItem = {
+  id: string;
+  username: string;
+  avatarUrl: string | null;
+  friendshipStatus: 'NONE' | 'PENDING' | 'ACCEPTED';
+  requestId: string | null;
+  direction: 'OUTGOING' | 'INCOMING' | null;
+};
+
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private readonly baseUrl = '/api';
@@ -65,6 +74,73 @@ export class ApiService {
     return this.http.get<{ items: any[] }>(`${this.baseUrl}/me/books`, {
       params,
     });
+  }
+
+  searchUsers(q: string): Observable<{ items: UserSearchItem[] }> {
+    const params = new HttpParams().set('q', q);
+
+    return this.http.get<{ items: UserSearchItem[] }>(`${this.baseUrl}/users`, {
+      params,
+    });
+  }
+
+  userProfile(userId: string) {
+    return this.http.get<{
+      user: { id: string; username: string; avatarUrl: string | null };
+      canViewProfile: boolean;
+      stats: Stats | null;
+      friendshipStatus: 'NONE' | 'PENDING' | 'ACCEPTED';
+      requestId: string | null;
+      direction: 'OUTGOING' | 'INCOMING' | null;
+    }>(`${this.baseUrl}/users/${userId}`);
+  }
+
+  userBooks(userId: string, status?: 'WANT' | 'READ') {
+    let params = new HttpParams();
+
+    if (status) {
+      params = params.set('status', status);
+    }
+
+    return this.http.get<{ items: any[] }>(
+      `${this.baseUrl}/users/${userId}/books`,
+      {
+        params,
+      },
+    );
+  }
+
+  requestFriend(userId: string) {
+    return this.http.post<{ item: any }>(
+      `${this.baseUrl}/users/${userId}/friend-request`,
+      {},
+    );
+  }
+
+  friends() {
+    return this.http.get<{ items: UserSearchItem[] }>(
+      `${this.baseUrl}/me/friends`,
+    );
+  }
+
+  friendRequests() {
+    return this.http.get<{
+      incoming: UserSearchItem[];
+      outgoing: UserSearchItem[];
+    }>(`${this.baseUrl}/me/friend-requests`);
+  }
+
+  acceptFriendRequest(requestId: string) {
+    return this.http.post<{ item: any }>(
+      `${this.baseUrl}/me/friend-requests/${requestId}/accept`,
+      {},
+    );
+  }
+
+  deleteFriendRequest(requestId: string) {
+    return this.http.delete<{ ok: boolean }>(
+      `${this.baseUrl}/me/friend-requests/${requestId}`,
+    );
   }
 
   rateBook(id: string, rating: number) {

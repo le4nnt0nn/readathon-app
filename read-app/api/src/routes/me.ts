@@ -2,7 +2,8 @@ import { Router } from "express";
 import { z } from "zod";
 import { UserBook } from "../../models/UserBook";
 import { User } from "../../models/User";
-import bcrypt from 'bcrypt';
+import { Friendship } from "../../models/Friendship";
+import bcrypt from "bcrypt";
 import { auth } from "../middleware/auth";
 
 export const meRouter = Router();
@@ -19,7 +20,9 @@ const AddBookSchema = z.object({
 
 meRouter.get("/profile", async (req, res) => {
   const userId = (req as any).user.userId as string;
-  const user = await User.findById(userId).select("username email avatarUrl").lean();
+  const user = await User.findById(userId)
+    .select("username email avatarUrl")
+    .lean();
   return res.json({ user: { id: userId, ...user } });
 });
 
@@ -44,14 +47,20 @@ meRouter.get("/books/:id", async (req, res) => {
 meRouter.post("/books", async (req, res) => {
   const userId = (req as any).user.userId as string;
   const parsed = AddBookSchema.safeParse(req.body);
-  if (!parsed.success) return res.status(400).json({ message: "Datos inválidos" });
+  if (!parsed.success)
+    return res.status(400).json({ message: "Datos inválidos" });
 
   const data = parsed.data;
 
-  const existing = await UserBook.findOne({ userId, source: data.source, externalId: data.externalId });
+  const existing = await UserBook.findOne({
+    userId,
+    source: data.source,
+    externalId: data.externalId,
+  });
   if (existing) {
     existing.status = data.status;
-    if (data.status === "READ" && !existing.finishedAt) existing.finishedAt = new Date();
+    if (data.status === "READ" && !existing.finishedAt)
+      existing.finishedAt = new Date();
     if (data.status === "WANT") existing.finishedAt = undefined;
 
     existing.title = data.title;
@@ -81,7 +90,8 @@ const PatchSchema = z.object({
 meRouter.patch("/books/:id", async (req, res) => {
   const userId = (req as any).user.userId as string;
   const parsed = PatchSchema.safeParse(req.body);
-  if (!parsed.success) return res.status(400).json({ message: "Datos inválidos" });
+  if (!parsed.success)
+    return res.status(400).json({ message: "Datos inválidos" });
 
   const book = await UserBook.findOne({ _id: req.params.id, userId });
   if (!book) return res.status(404).json({ message: "No encontrado" });
@@ -102,7 +112,10 @@ meRouter.patch("/books/:id", async (req, res) => {
 
 meRouter.delete("/books/:id", async (req, res) => {
   const userId = (req as any).user.userId as string;
-  const deleted = await UserBook.findOneAndDelete({ _id: req.params.id, userId });
+  const deleted = await UserBook.findOneAndDelete({
+    _id: req.params.id,
+    userId,
+  });
   if (!deleted) return res.status(404).json({ message: "No encontrado" });
   return res.json({ ok: true });
 });
@@ -119,7 +132,7 @@ meRouter.patch("/books/:id/rating", auth, async (req, res) => {
   const book = await UserBook.findOneAndUpdate(
     { _id: id, userId },
     { rating },
-    { new: true }
+    { new: true },
   );
 
   if (!book) return res.status(404).json({ message: "Libro no encontrado" });
@@ -136,25 +149,122 @@ meRouter.get("/stats", async (req, res) => {
   return res.json({ want, read });
 });
 
+meRouter.get("/friends", async (req, res) => {
+  const userId = (req as any).user.userId as string;
+  const friendships = await Friendship.find({
+    status: "ACCEPTED",
+    $or: [{ requesterId: userId }, { recipientId: userId }],
+  })
+    .populate("requesterId", "username avatarUrl")
+    .populate("recipientId", "username avatarUrl")
+    .sort({ updatedAt: -1 })
+    .lean();
+
+  const items = friendships.map((friendship: any) => {
+    const friend =
+      String(friendship.requesterId._id) === userId
+        ? friendship.recipientId
+        : friendship.requesterId;
+
+    return {
+      requestId: String(friendship._id),
+      id: String(friend._id),
+      username: friend.username,
+      avatarUrl: friend.avatarUrl ?? null,
+    };
+  });
+
+  return res.json({ items });
+});
+
+meRouter.get("/friend-requests", async (req, res) => {
+  const userId = (req as any).user.userId as string;
+  const incoming = await Friendship.find({
+    recipientId: userId,
+    status: "PENDING",
+  })
+    .populate("requesterId", "username avatarUrl")
+    .sort({ createdAt: -1 })
+    .lean();
+  const outgoing = await Friendship.find({
+    requesterId: userId,
+    status: "PENDING",
+  })
+    .populate("recipientId", "username avatarUrl")
+    .sort({ createdAt: -1 })
+    .lean();
+
+  return res.json({
+    incoming: incoming.map((request: any) => ({
+      requestId: String(request._id),
+      id: String(request.requesterId._id),
+      username: request.requesterId.username,
+      avatarUrl: request.requesterId.avatarUrl ?? null,
+    })),
+    outgoing: outgoing.map((request: any) => ({
+      requestId: String(request._id),
+      id: String(request.recipientId._id),
+      username: request.recipientId.username,
+      avatarUrl: request.recipientId.avatarUrl ?? null,
+    })),
+  });
+});
+
+meRouter.post("/friend-requests/:requestId/accept", async (req, res) => {
+  const userId = (req as any).user.userId as string;
+  const request = await Friendship.findOne({
+    _id: req.params.requestId,
+    recipientId: userId,
+    status: "PENDING",
+  });
+
+  if (!request)
+    return res.status(404).json({ message: "Solicitud no encontrada" });
+
+  request.status = "ACCEPTED";
+  await request.save();
+
+  return res.json({ item: request });
+});
+
+meRouter.delete("/friend-requests/:requestId", async (req, res) => {
+  const userId = (req as any).user.userId as string;
+  const deleted = await Friendship.findOneAndDelete({
+    _id: req.params.requestId,
+    status: "PENDING",
+    $or: [{ requesterId: userId }, { recipientId: userId }],
+  });
+
+  if (!deleted)
+    return res.status(404).json({ message: "Solicitud no encontrada" });
+
+  return res.json({ ok: true });
+});
+
 meRouter.post("/change-password", auth, async (req, res) => {
   try {
     const userId = (req as any).user.userId;
     const { currentPassword, newPassword } = req.body;
 
     if (!currentPassword || !newPassword) {
-      return res.status(400).json({ message: 'Datos incompletos' });
+      return res.status(400).json({ message: "Datos incompletos" });
     }
 
     if (newPassword.length < 8) {
-      return res.status(400).json({ message: 'La nueva contraseña debe tener al menos 8 caracteres' });
+      return res
+        .status(400)
+        .json({
+          message: "La nueva contraseña debe tener al menos 8 caracteres",
+        });
     }
 
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
+    if (!user)
+      return res.status(404).json({ message: "Usuario no encontrado" });
 
     const isValid = await bcrypt.compare(currentPassword, user.passwordHash);
     if (!isValid) {
-      return res.status(401).json({ message: 'Contraseña actual incorrecta' });
+      return res.status(401).json({ message: "Contraseña actual incorrecta" });
     }
 
     const newHash = await bcrypt.hash(newPassword, 10);
@@ -163,9 +273,9 @@ meRouter.post("/change-password", auth, async (req, res) => {
 
     res.json({ ok: true });
   } catch (err) {
-    res.status(500).json({ message: 'Error interno' });
+    res.status(500).json({ message: "Error interno" });
   }
-})
+});
 
 meRouter.get("/insights", auth, async (req, res) => {
   const userId = (req as any).user.userId;
@@ -173,18 +283,23 @@ meRouter.get("/insights", auth, async (req, res) => {
   const books = await UserBook.find({ userId, status: "READ" }).lean();
   const genreCount: Record<string, number> = {};
 
-  books.forEach(book => {
+  books.forEach((book) => {
     if (book.categories?.length) {
       const genre = book.categories[0];
       genreCount[genre] = (genreCount[genre] || 0) + 1;
     }
   });
 
-  const genres = Object.entries(genreCount).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count);
-  const topRated = books.filter(b => typeof b.rating === "number").sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)).slice(0, 3);
+  const genres = Object.entries(genreCount)
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count);
+  const topRated = books
+    .filter((b) => typeof b.rating === "number")
+    .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
+    .slice(0, 3);
 
   res.json({
     genres,
-    topRated
+    topRated,
   });
 });
