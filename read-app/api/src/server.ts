@@ -27,7 +27,7 @@ app.get("/health", (_, res) => res.json({ ok: true }));
 app.use("/external", optionalAuth, externalRouter);
 app.use("/auth", authRouter);
 app.use("/me", auth, meRouter);
-app.use("/users", usersRouter);
+app.use("/users", auth, usersRouter);
 
 async function main() {
   await mongoose.connect(process.env.MONGO_URI!);
