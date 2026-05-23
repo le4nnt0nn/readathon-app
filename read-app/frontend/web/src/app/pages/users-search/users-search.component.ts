@@ -15,7 +15,7 @@ export class UsersSearchComponent {
   searched = false;
   items: UserSearchItem[] = [];
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService) { }
 
   search() {
     const term = this.q.trim();

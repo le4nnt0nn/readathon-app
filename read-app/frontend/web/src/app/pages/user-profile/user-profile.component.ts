@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { NgIf, NgFor, UpperCasePipe  } from '@angular/common';
+import { NgIf, NgFor, UpperCasePipe } from '@angular/common';
 import { ApiService } from '../../core/api.service';
 import { AuthService } from '../../core/auth.service';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
   standalone: true,
-  imports: [NgIf, NgFor, UpperCasePipe ],
+  imports: [NgIf, NgFor, UpperCasePipe],
   templateUrl: './user-profile.component.html',
 })
 export class UserProfileComponent implements OnInit {
@@ -23,7 +23,7 @@ export class UserProfileComponent implements OnInit {
     private api: ApiService,
     private auth: AuthService,
     private route: ActivatedRoute,
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.route.paramMap.subscribe((params) => {
