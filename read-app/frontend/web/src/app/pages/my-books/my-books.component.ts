@@ -19,7 +19,7 @@ export class MyBooksComponent implements OnInit {
   constructor(
     private api: ApiService,
     private route: ActivatedRoute,
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {
@@ -29,6 +29,18 @@ export class MyBooksComponent implements OnInit {
       this.load();
     });
   }
+
+  load() {
+    this.loading = true;
+    this.api.myBooks(this.tab).subscribe({
+      next: (res) => {
+        this.items = res.items;
+        this.loading = false;
+      },
+      error: () => (this.loading = false),
+    });
+  }
+
   get filteredItems() {
     if (!this.searchTerm) return this.items;
 
@@ -47,17 +59,6 @@ export class MyBooksComponent implements OnInit {
     this.load();
   }
 
-  rate(book: any, rating: number) {
-    this.api.rateBook(book._id, rating).subscribe({
-      next: (res) => {
-        book.rating = res.item.rating;
-      },
-      error: () => {
-        console.error('Error puntuando libro');
-      },
-    });
-  }
-
   remove(book: any) {
     this.api.removeBook(book._id).subscribe({
       next: () => {
@@ -66,15 +67,15 @@ export class MyBooksComponent implements OnInit {
       error: () => console.error('Error eliminando libro'),
     });
   }
-
-  load() {
-    this.loading = true;
-    this.api.myBooks(this.tab).subscribe({
+  
+  rate(book: any, rating: number) {
+    this.api.rateBook(book._id, rating).subscribe({
       next: (res) => {
-        this.items = res.items;
-        this.loading = false;
+        book.rating = res.item.rating;
       },
-      error: () => (this.loading = false),
+      error: () => {
+        console.error('Error puntuando libro');
+      },
     });
   }
 }
