@@ -15,6 +15,15 @@ export class DashboardComponent implements OnInit {
   want = 0;
   genres: { name: string; count: number }[] = [];
   topRated: any[] = [];
+  tips = [
+  "Entra en Buscar para descubrir libros del mundo y añadirlos a tu lista.",
+  "Marca un libro como Leído para poder puntuarlo.",
+  "Explora perfiles de amigos y descubre nuevas lecturas.",
+  "Tu género más leído se actualiza automáticamente.",
+  "Puedes buscar dentro de tus listas usando el buscador."
+];
+currentTipIndex = 0;
+currentTip = this.tips[0];
 
   constructor(private api: ApiService, private router: Router) {}
 
@@ -23,6 +32,7 @@ export class DashboardComponent implements OnInit {
       next: (stats) => {
         this.read = stats.read;
         this.want = stats.want;
+        this.startTipsRotation();
       },
     });
 
@@ -44,4 +54,13 @@ export class DashboardComponent implements OnInit {
         queryParams: { tab }
       });
   }
+
+  startTipsRotation() {
+    setInterval(() => {
+      this.currentTipIndex =
+        (this.currentTipIndex + 1) % this.tips.length;
+
+      this.currentTip = this.tips[this.currentTipIndex];
+    }, 20000);
+}
 }
