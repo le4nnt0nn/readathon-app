@@ -26,7 +26,8 @@
 
   <section class="p-6 rounded-3xl bg-white/5 border border-white/10 shadow-xl">
     <h2 class="text-xl font-semibold">Tip submarino 🐠</h2>
-    <p class="text-white/70 mt-2 leading-relaxed transition-opacity duration-500">
+    <p class="text-white/70 mt-2 leading-relaxed transition-all duration-300" [class.opacity-0]="!tipVisible"
+      [class.opacity-100]="tipVisible">
       {{ currentTip }}
     </p>
   </section>
