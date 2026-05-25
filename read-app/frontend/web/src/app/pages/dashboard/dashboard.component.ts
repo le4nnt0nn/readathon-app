@@ -1,12 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import { NgIf, NgFor } from '@angular/common';
+import { NgIf, NgFor, NgSwitch, NgSwitchCase, NgSwitchDefault, UpperCasePipe, DatePipe } from '@angular/common';
 import { ApiService } from '../../core/api.service';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [NgIf, NgFor],
+  imports: [
+    NgIf,
+    NgFor,
+    NgSwitch,
+    NgSwitchCase,
+    UpperCasePipe,
+    DatePipe,
+  ],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {
@@ -24,6 +31,7 @@ export class DashboardComponent implements OnInit {
   ];
   currentTipIndex = 0;
   currentTip = this.tips[0];
+  feed: any[] = [];
 
   constructor(
     private api: ApiService,
@@ -36,6 +44,9 @@ export class DashboardComponent implements OnInit {
         this.read = stats.read;
         this.want = stats.want;
         this.startTipsRotation();
+        this.api.getFeed().subscribe((res) => {
+          this.feed = res.items;
+        });
       },
     });
 

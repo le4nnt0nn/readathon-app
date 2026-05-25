@@ -3,6 +3,7 @@ import { z } from "zod";
 import { UserBook } from "../../models/UserBook";
 import { User } from "../../models/User";
 import { Friendship } from "../../models/Friendship";
+import { Activity } from "../../models/Activity";
 import bcrypt from "bcrypt";
 import { auth } from "../middleware/auth";
 
@@ -58,6 +59,7 @@ meRouter.post("/books", async (req, res) => {
     externalId: data.externalId,
   });
   if (existing) {
+    const previousStatus = existing.status;
     existing.status = data.status;
     if (data.status === "READ" && !existing.finishedAt)
       existing.finishedAt = new Date();
@@ -69,6 +71,15 @@ meRouter.post("/books", async (req, res) => {
     existing.categories = data.categories;
 
     await existing.save();
+
+    if (previousStatus !== "READ" && data.status === "READ") {
+      await Activity.create({
+        userId,
+        type: "FINISHED_BOOK",
+        bookTitle: existing.title,
+      });
+    }
+
     return res.json({ item: existing });
   }
 
@@ -76,6 +87,12 @@ meRouter.post("/books", async (req, res) => {
     userId,
     ...data,
     finishedAt: data.status === "READ" ? new Date() : undefined,
+  });
+
+  await Activity.create({
+    userId,
+    type: data.status === "READ" ? "FINISHED_BOOK" : "ADDED_BOOK",
+    bookTitle: created.title,
   });
 
   return res.status(201).json({ item: created });
@@ -251,11 +268,9 @@ meRouter.post("/change-password", auth, async (req, res) => {
     }
 
     if (newPassword.length < 8) {
-      return res
-        .status(400)
-        .json({
-          message: "La nueva contraseña debe tener al menos 8 caracteres",
-        });
+      return res.status(400).json({
+        message: "La nueva contraseña debe tener al menos 8 caracteres",
+      });
     }
 
     const user = await User.findById(userId);
@@ -302,4 +317,37 @@ meRouter.get("/insights", auth, async (req, res) => {
     genres,
     topRated,
   });
+});
+
+meRouter.get("/activities", auth, async (req, res) => {
+  const userId = (req as any).user.userId;
+  const activities = await Activity.find({ userId })
+    .sort({ createdAt: -1 })
+    .limit(20)
+    .lean();
+    
+  res.json({ items: activities });
+});
+
+meRouter.get("/feed", async (req, res) => {
+  const userId = (req as any).user.userId;
+
+  const friends = await Friendship.find({
+    status: "ACCEPTED",
+    $or: [{ requesterId: userId }, { recipientId: userId }],
+  }).lean();
+
+  const friendIds = friends.map((f) =>
+    String(f.requesterId) === userId ? f.recipientId : f.requesterId,
+  );
+
+  const activities = await Activity.find({
+    userId: { $in: friendIds },
+  })
+    .populate("userId", "username avatarUrl")
+    .sort({ createdAt: -1 })
+    .limit(20)
+    .lean();
+
+  res.json({ items: activities });
 });

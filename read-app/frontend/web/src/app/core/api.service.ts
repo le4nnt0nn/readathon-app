@@ -183,4 +183,8 @@ export class ApiService {
       topRated: any[];
     }>('/api/me/insights');
   }
+
+  getFeed() {
+    return this.http.get<{ items: any[] }>('/api/me/feed');
+  }
 }
