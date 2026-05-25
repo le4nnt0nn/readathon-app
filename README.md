@@ -1,5 +1,5 @@
 # readathon-app
-A book app to admin all your reads
+A book app to admin all your reads :)
 
 This project requires a `.env` file in the root directory. Create one based on the template below:
 
