@@ -1,15 +1,16 @@
 <div class="min-h-screen">
   <header class="sticky top-0 z-20 backdrop-blur bg-white/5 border-b border-white/10">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
 
-      <a routerLink="/app/dashboard" class="flex items-center gap-3 cursor-pointer group">
-        <div class="w-10 h-10 rounded-xl bg-white/10 grid place-items-center
+      <a routerLink="/app/dashboard" class="min-w-0 flex items-center gap-3 cursor-pointer group"
+        (click)="closeMenus()">
+        <div class="w-10 h-10 shrink-0 rounded-xl bg-white/10 grid place-items-center
            transition-all duration-200
            group-hover:scale-110 active:scale-95 group-hover:bg-white/20">
           🌊
         </div>
-        <div>
-          <div class="font-semibold group-hover:text-cyan-300 transition">
+        <div class="min-w-0">
+          <div class="font-semibold leading-tight group-hover:text-cyan-300 transition">
             Readathon | El océano de los libros
           </div>
           <div class="text-xs text-white/60">
@@ -18,7 +19,15 @@
         </div>
       </a>
 
-      <nav class="flex gap-2 text-sm items-center">
+      <button type="button"
+        class="md:hidden shrink-0 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10"
+        [attr.aria-expanded]="menuOpen" aria-label="Abrir menu" (click)="toggleMenu()">
+        <span class="block w-5 h-0.5 bg-white mb-1"></span>
+        <span class="block w-5 h-0.5 bg-white mb-1"></span>
+        <span class="block w-5 h-0.5 bg-white"></span>
+      </button>
+
+      <nav class="hidden md:flex gap-2 text-sm items-center">
         <a routerLink="/app/dashboard" routerLinkActive="bg-white/10"
           class="px-3 py-2 rounded-xl hover:bg-white/10">Dashboard</a>
 
@@ -75,6 +84,59 @@
         </button>
       </nav>
     </div>
+
+    <nav *ngIf="menuOpen" @dropdownAnimation
+      class="md:hidden border-t border-white/10 bg-slate-950/95 px-4 py-3 text-sm">
+      <div class="max-w-6xl mx-auto flex flex-col gap-2">
+        <a routerLink="/app/dashboard" routerLinkActive="bg-white/10" class="px-3 py-3 rounded-xl hover:bg-white/10"
+          (click)="closeMenus()">Dashboard</a>
+
+        <a routerLink="/app/discover" routerLinkActive="bg-white/10" class="px-3 py-3 rounded-xl hover:bg-white/10"
+          (click)="closeMenus()">Buscar</a>
+
+        <a routerLink="/app/my-books" routerLinkActive="bg-white/10" class="px-3 py-3 rounded-xl hover:bg-white/10"
+          (click)="closeMenus()">Mis listas</a>
+
+        <button type="button"
+          class="w-full text-left px-3 py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10"
+          (click)="toggleUsers()">
+          Usuarios
+        </button>
+
+        <div *ngIf="usersOpen" @dropdownAnimation class="rounded-2xl bg-white/5 border border-white/10 overflow-hidden">
+          <a routerLink="/app/users" class="block px-4 py-3 hover:bg-white/10" (click)="closeMenus()">
+            Buscar usuarios
+          </a>
+          <a routerLink="/app/friends" class="block px-4 py-3 hover:bg-white/10" (click)="closeMenus()">
+            Amigos
+          </a>
+        </div>
+
+        <button type="button"
+          class="w-full text-left px-3 py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10"
+          (click)="toggleSecurity()">
+          Seguridad
+        </button>
+
+        <div *ngIf="securityOpen" @dropdownAnimation
+          class="rounded-2xl bg-white/5 border border-white/10 overflow-hidden">
+          <a routerLink="/app/profile" class="block px-4 py-3 hover:bg-white/10" (click)="closeMenus()">
+            Perfil
+          </a>
+          <a routerLink="/app/change-password" class="block px-4 py-3 hover:bg-white/10" (click)="closeMenus()">
+            Cambiar contraseña
+          </a>
+          <button class="w-full text-left px-4 py-3 hover:bg-white/10 text-red-300" (click)="logout()">
+            Cerrar sesión
+          </button>
+        </div>
+
+        <button (click)="logout()"
+          class="w-full text-left px-3 py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10">
+          Cerrar sesión
+        </button>
+      </div>
+    </nav>
   </header>
 
   <main class="max-w-6xl mx-auto px-4 py-6">

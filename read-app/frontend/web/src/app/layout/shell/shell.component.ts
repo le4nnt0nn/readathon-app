@@ -35,9 +35,22 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
   ]
 })
 export class ShellComponent {
+  menuOpen = false;
   securityOpen = false;
   usersOpen = false;
   constructor(public auth: AuthService, private router: Router) {}
+
+  toggleMenu() {
+    this.menuOpen = !this.menuOpen;
+    this.securityOpen = false;
+    this.usersOpen = false;
+  }
+
+  closeMenus() {
+    this.menuOpen = false;
+    this.securityOpen = false;
+    this.usersOpen = false;
+  }
 
   toggleUsers() {
     this.usersOpen = !this.usersOpen;
@@ -50,6 +63,7 @@ export class ShellComponent {
   }
 
   logout() {
+    this.closeMenus();
     this.auth.logout();
     this.router.navigateByUrl('/login');
   }
