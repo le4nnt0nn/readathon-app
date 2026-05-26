@@ -49,21 +49,23 @@ export class DiscoverComponent {
   }
 
   mark(book: ExternalBook, status: 'WANT' | 'READ') {
-    this.api.addToMyBooks({
-      source: 'GOOGLE',
-      externalId: book.externalId,
-      title: book.title,
-      authors: book.authors ?? [],
-      thumbnail: book.thumbnail ?? null,
-      categories: book.categories ?? [],
-      status,
-    }).subscribe({
-      next: () => {
-        book.userStatus = status;
-      },
-      error: () => {
-        this.error = 'No se pudo guardar en tu lista';
-      },
-    });
+    this.api
+      .addToMyBooks({
+        source: 'GOOGLE',
+        externalId: book.externalId,
+        title: book.title,
+        authors: book.authors ?? [],
+        thumbnail: book.thumbnail ?? null,
+        categories: book.categories ?? [],
+        status,
+      })
+      .subscribe({
+        next: () => {
+          book.userStatus = status;
+        },
+        error: () => {
+          this.error = 'No se pudo guardar en tu lista';
+        },
+      });
   }
 }
