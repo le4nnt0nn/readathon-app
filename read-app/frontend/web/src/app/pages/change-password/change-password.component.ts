@@ -7,10 +7,9 @@ import { ApiService } from '../../core/api.service';
 @Component({
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './change-password.component.html'
+  templateUrl: './change-password.component.html',
 })
 export class ChangePasswordComponent {
-
   currentPassword = '';
   newPassword = '';
   confirmPassword = '';
@@ -21,7 +20,7 @@ export class ChangePasswordComponent {
 
   constructor(
     private api: ApiService,
-    private router: Router
+    private router: Router,
   ) {}
 
   submit() {
@@ -35,21 +34,20 @@ export class ChangePasswordComponent {
 
     this.loading = true;
 
-    this.api.changePassword(this.currentPassword, this.newPassword)
-      .subscribe({
-        next: () => {
-          this.loading = false;
-          this.message = 'Contraseña actualizada 🌊';
+    this.api.changePassword(this.currentPassword, this.newPassword).subscribe({
+      next: () => {
+        this.loading = false;
+        this.message = 'Contraseña actualizada 🌊';
 
-          setTimeout(() => {
-            localStorage.removeItem('bookocean_token');
-            this.router.navigateByUrl('/login');
-          }, 1500);
-        },
-        error: (err) => {
-          this.loading = false;
-          this.error = err.error?.message || 'Error al cambiar contraseña';
-        }
-      });
+        setTimeout(() => {
+          localStorage.removeItem('bookocean_token');
+          this.router.navigateByUrl('/login');
+        }, 1500);
+      },
+      error: (err) => {
+        this.loading = false;
+        this.error = err.error?.message || 'Error al cambiar contraseña';
+      },
+    });
   }
 }
