@@ -1,19 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-import { NgIf, NgFor, NgSwitch, NgSwitchCase, NgSwitchDefault, UpperCasePipe, DatePipe } from '@angular/common';
+import {
+  NgIf,
+  NgFor,
+  NgSwitch,
+  NgSwitchCase,
+  NgSwitchDefault,
+  UpperCasePipe,
+  DatePipe,
+} from '@angular/common';
 import { ApiService } from '../../core/api.service';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [
-    NgIf,
-    NgFor,
-    NgSwitch,
-    NgSwitchCase,
-    UpperCasePipe,
-    DatePipe,
-  ],
+  imports: [NgIf, NgFor, NgSwitch, NgSwitchCase, UpperCasePipe, DatePipe],
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {
